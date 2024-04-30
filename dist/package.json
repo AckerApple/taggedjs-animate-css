@@ -1,0 +1,20 @@
+{
+  "name": "taggedjs-animate",
+  "version": "0.0.0",
+  "description": "HTML and CSS animations for TaggedJs brought to us by animate-css",
+  "main": "js/index.js",
+  "keywords": [
+    "react",
+    "angular",
+    "vue",
+    "svelte",
+    "alternative",
+    "works",
+    "native",
+    "in",
+    "web",
+    "browser"
+  ],
+  "author": "Acker Dawn Apple",
+  "license": "MIT"
+}
