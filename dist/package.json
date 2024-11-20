@@ -1,6 +1,7 @@
 {
-  "name": "taggedjs-animate",
-  "version": "0.0.1",
+  "name": "taggedjs-animate-css",
+  "type": "module",
+  "version": "0.0.5",
   "description": "HTML and CSS animations for TaggedJs brought to us by animate-css",
   "main": "js/index.js",
   "keywords": [

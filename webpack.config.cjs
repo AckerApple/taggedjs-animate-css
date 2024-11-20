@@ -1,10 +1,12 @@
 const path = require('path');
 const out = path.resolve(__dirname, 'dist');
-
+const TerserPlugin = require('terser-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin');
+const { ResolveTsForJsPlugin } = require('./ResolveTsForJsPlugin.class')
 console.debug(`🖊️ Writing bundle to ${out}`)
 
 module.exports = {
-  mode: 'development',
+  mode: 'production', // development
   devtool: 'source-map',
   entry: './ts/index.ts', // Entry point of your TypeScript application
   output: {
@@ -32,29 +34,17 @@ module.exports = {
       },
     ],
   },
-}
-
-/*
-const path = require('path');
-const outPath = path.resolve(__dirname, 'dist')
-
-console.debug(`🖊️ Writing bundle to ${outPath}`)
-
-module.exports = {
-  mode: 'production',
-  entry: './js/index.js', // Your entry file
-  output: {
-    filename: 'index.js',
-    path: outPath,
-    libraryTarget: 'module',
-    chunkFormat: 'module', // Specify the chunkFormat
+  optimization: {
+      minimize: true,
+      minimizer: [new TerserPlugin()],
+      splitChunks: {
+          chunks: 'all',
+      },
   },
-  experiments: {
-    outputModule: true, // Enable experiments.outputModule
-  },
-  target: 'node',
-  resolve: {
-    extensions: ['.js']
-  }
+  plugins: [
+      new ResolveTsForJsPlugin(),
+      new CompressionPlugin({
+          algorithm: 'gzip',
+      }),
+  ]
 }
-*/
