@@ -1,4 +1,4 @@
-type ElementEvent = {
+export type ElementEvent = {
     target: HTMLElement;
     stagger: number;
 };
@@ -11,4 +11,3 @@ export declare function createFx({ fxIn, fxOut, staggerBy, }: {
     out: (input: ElementEvent) => Promise<void>;
 };
 export declare function captureElementPosition(element: any): void;
-export {};
