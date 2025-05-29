@@ -19,23 +19,20 @@ const animateDestroy = async ({ target, stagger, capturePosition = true, fxName 
     if (stagger) {
         await wait(stagger * staggerBy);
     }
-    // Create a one-time event listener
-    function handleAnimationEnd(event) {
-        // Optional: make sure the event is from the target element
-        if (event.target !== target)
-            return;
-        // Clean up
-        target.classList.remove('animate__animated', 'animate__' + fxName);
-        target.removeEventListener('animationend', handleAnimationEnd);
-    }
-    target.addEventListener('animationend', handleAnimationEnd);
-    target.classList.add('animate__animated', 'animate__' + fxName);
-    /*
-    // dont block process but remove from stage well after animation completed
-    wait(1000).then(() => {
-      target.classList.remove('animate__animated','animate__' + fxName)
-    })
-    */
+    return new Promise(function (res) {
+        // Create a one-time event listener
+        function handleAnimationEnd(event) {
+            // Optional: make sure the event is from the target element
+            if (event.target !== target)
+                return;
+            // Clean up
+            target.classList.remove('animate__animated', 'animate__' + fxName);
+            target.removeEventListener('animationend', handleAnimationEnd);
+            res(undefined);
+        }
+        target.classList.add('animate__animated', 'animate__' + fxName);
+        target.addEventListener('animationend', handleAnimationEnd);
+    });
 };
 // absolute
 export function captureElementPosition(element) {
