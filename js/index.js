@@ -10,6 +10,6 @@ export const animateWrap = ({ fxIn = fadeInDown, fxOut = fadeOutUp, duration = '
     const innerHTML = getInnerHTML();
     return html `
     <div oninit=${fxIn} ondestroy=${fxOut} style.--animate-duration=${duration}>${innerHTML}</div>
-  `.setInnerHTML(innerHTML);
+  `.acceptInnerHTML(innerHTML);
 };
 //# sourceMappingURL=index.js.map
