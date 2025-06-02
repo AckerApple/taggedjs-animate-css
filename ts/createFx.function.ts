@@ -1,4 +1,4 @@
-type ElementEvent = {
+export type ElementEvent = {
   target: HTMLElement
   stagger: number
 }
@@ -9,21 +9,28 @@ type ElementFxEvent = ElementEvent & {
 }
 
 type ElementFxOutEvent = ElementFxEvent & {
-  capturePosition: boolean
+  outPositionAbsolute: boolean
 }
 
 export function createFx({
   fxIn,
   fxOut,
   staggerBy = 300,
+  outPositionAbsolute = true,
 }: {
   fxIn: string
   fxOut: string
   staggerBy?: number
+  outPositionAbsolute?: boolean,
 }) {
   return {
-    in: (input: ElementEvent) => animateInit({fxName: fxIn, staggerBy, ...input}),
-    out: (input: ElementEvent) => animateDestroy({fxName: fxOut, staggerBy, capturePosition:true, ...input}),
+    in: (input: ElementEvent) =>
+      animateInit({fxName: fxIn, staggerBy, ...input}),
+    
+    out: (
+      input: ElementEvent,
+    ) =>
+      animateDestroy({fxName: fxOut, staggerBy, outPositionAbsolute, ...input}),
   }
 }
 
@@ -42,11 +49,11 @@ const animateInit = async ({
 
 const animateDestroy = async ({
   target, stagger,
-  capturePosition=true,
+  outPositionAbsolute=true,
   fxName = 'fadeOutUp',
   staggerBy
 }: ElementFxOutEvent) => {/* animateDestroy */
-  if(capturePosition) {
+  if(outPositionAbsolute) {
     captureElementPosition(target)
   }
 
@@ -54,11 +61,21 @@ const animateDestroy = async ({
     await wait(stagger * staggerBy)
   }
 
-  target.classList.add('animate__animated','animate__' + fxName)
-  
-  await wait(1000) // don't allow remove from stage until animation completed
-  
-  target.classList.remove('animate__animated','animate__' + fxName)
+
+  return new Promise<void>(function(res) {
+    // Create a one-time event listener
+    function handleAnimationEnd(event: any) {
+        // Optional: make sure the event is from the target element
+        if (event.target !== target) return;
+
+        // Clean up
+        target.classList.remove('animate__animated', 'animate__' + fxName);
+        target.removeEventListener('animationend', handleAnimationEnd);
+        res(undefined)
+    }
+    target.classList.add('animate__animated', 'animate__' + fxName);
+    target.addEventListener('animationend', handleAnimationEnd);
+  })
 }
 
 // absolute
