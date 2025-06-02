@@ -8,6 +8,7 @@ export type AnimateWrapOptions = {
     fxOut?: (input: ElementEvent) => Promise<void>;
     /** Ex: .1s */
     duration: string;
+    /** only used when fxIn or fxOut is not provided */
     outPositionAbsolute?: boolean;
 };
 /** Use on html elements to have them animated in and out */
