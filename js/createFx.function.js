@@ -1,7 +1,7 @@
-export function createFx({ fxIn, fxOut, staggerBy = 300, }) {
+export function createFx({ fxIn, fxOut, staggerBy = 300, outPositionAbsolute = true, }) {
     return {
         in: (input) => animateInit({ fxName: fxIn, staggerBy, ...input }),
-        out: (input) => animateDestroy({ fxName: fxOut, staggerBy, capturePosition: true, ...input }),
+        out: (input) => animateDestroy({ fxName: fxOut, staggerBy, outPositionAbsolute, ...input }),
     };
 }
 const animateInit = async ({ target, stagger, staggerBy, fxName = 'fadeInDown' }) => {
@@ -12,8 +12,8 @@ const animateInit = async ({ target, stagger, staggerBy, fxName = 'fadeInDown' }
     target.style.opacity = '1';
     target.classList.add('animate__animated', 'animate__' + fxName);
 };
-const animateDestroy = async ({ target, stagger, capturePosition = true, fxName = 'fadeOutUp', staggerBy }) => {
-    if (capturePosition) {
+const animateDestroy = async ({ target, stagger, outPositionAbsolute = true, fxName = 'fadeOutUp', staggerBy }) => {
+    if (outPositionAbsolute) {
         captureElementPosition(target);
     }
     if (stagger) {

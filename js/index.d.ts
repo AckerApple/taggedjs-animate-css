@@ -8,5 +8,9 @@ export type AnimateWrapOptions = {
     fxOut?: (input: ElementEvent) => Promise<void>;
     /** Ex: .1s */
     duration: string;
+    outPositionAbsolute?: boolean;
 };
-export declare const animateWrap: ({ fxIn, fxOut, duration, }?: AnimateWrapOptions) => import("taggedjs").Tag;
+/** Use on html elements to have them animated in and out */
+export declare function animateWrap({ fxIn, fxOut, duration, outPositionAbsolute, }?: AnimateWrapOptions): import("taggedjs").Tag;
+/** Use on html elements, within a loop, to have them animated in and out */
+export declare function animateLoop({ fxIn, fxOut, duration, outPositionAbsolute, }?: AnimateWrapOptions): import("taggedjs").Tag;
