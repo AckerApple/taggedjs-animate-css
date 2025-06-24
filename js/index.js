@@ -1,14 +1,24 @@
 import { createFx } from "./createFx.function.js";
 import { getInnerHTML, html } from "taggedjs";
-export const { in: fadeInDown, out: fadeOutUp } = createFx({ fxIn: 'fadeInDown', fxOut: 'fadeOutUp' });
-export const { in: fadeIn, out: fadeOut } = createFx({ fxIn: 'fadeIn', fxOut: 'fadeOut' });
+export const { in: fadeInDown, out: fadeOutUp } = createFx({
+    fxIn: 'fadeInUp',
+    fxOut: 'fadeOutDown'
+});
+export const { in: fadeIn, out: fadeOut } = createFx({
+    fxIn: 'fadeIn',
+    fxOut: 'fadeOut',
+});
 /** Use on html elements to have them animated in and out */
 export function animateWrap({ fxIn, fxOut, duration = '.2s', outPositionAbsolute = false, } = {
     duration: '.2s',
     outPositionAbsolute: false,
 }) {
     if (!fxIn || !fxOut) {
-        const created = createFx({ fxIn: 'fadeInDown', fxOut: 'fadeOutUp', outPositionAbsolute });
+        const created = createFx({
+            fxIn: 'fadeInUp',
+            fxOut: 'fadeOutDown',
+            outPositionAbsolute,
+        });
         if (!fxIn) {
             fxIn = created.in;
         }
@@ -27,7 +37,11 @@ export function animateLoop({ fxIn, fxOut, duration = '.2s', outPositionAbsolute
     outPositionAbsolute: true,
 }) {
     if (!fxIn || !fxOut) {
-        const created = createFx({ fxIn: 'fadeInDown', fxOut: 'fadeOutUp', outPositionAbsolute });
+        const created = createFx({
+            fxIn: 'fadeInUp',
+            fxOut: 'fadeOutDown',
+            outPositionAbsolute
+        });
         if (!fxIn) {
             fxIn = created.in;
         }
