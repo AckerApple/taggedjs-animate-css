@@ -1,39 +1,53 @@
-export function createFx({ fxIn, fxOut, staggerBy = 300, outPositionAbsolute = true, }) {
+export function createFx({ fxIn, fxOut, 
+// staggerBy = 300,
+outPositionAbsolute = true, }) {
     return {
-        in: (input) => animateInit({ fxName: fxIn, staggerBy, ...input }),
-        out: (input) => animateDestroy({ fxName: fxOut, staggerBy, outPositionAbsolute, ...input }),
+        in: (input, stagger) => animateInit({
+            fxName: fxIn,
+            ...input,
+        }, stagger),
+        out: (input, stagger) => animateDestroy({
+            fxName: fxOut,
+            outPositionAbsolute,
+            ...input,
+        }, stagger),
     };
 }
-const animateInit = async ({ target, stagger, staggerBy, fxName = 'fadeInDown' }) => {
+const animateInit = async ({ target, fxName = 'fadeInUp' }, stagger) => {
     target.style.opacity = '0';
     if (stagger) {
-        await wait(stagger * staggerBy);
+        await wait(stagger);
     }
     target.style.opacity = '1';
-    target.classList.add('animate__animated', 'animate__' + fxName);
+    return addClassesTo(fxName, target);
 };
-const animateDestroy = async ({ target, stagger, outPositionAbsolute = true, fxName = 'fadeOutUp', staggerBy }) => {
+const animateDestroy = async ({ target, outPositionAbsolute = true, fxName = 'fadeOutUp', }, stagger) => {
     if (outPositionAbsolute) {
         captureElementPosition(target);
     }
     if (stagger) {
-        await wait(stagger * staggerBy);
+        await wait(stagger);
     }
-    return new Promise(function (res) {
-        // Create a one-time event listener
-        function handleAnimationEnd(event) {
-            // Optional: make sure the event is from the target element
-            if (event.target !== target)
-                return;
-            // Clean up
-            target.classList.remove('animate__animated', 'animate__' + fxName);
-            target.removeEventListener('animationend', handleAnimationEnd);
-            res(undefined);
-        }
-        target.classList.add('animate__animated', 'animate__' + fxName);
-        target.addEventListener('animationend', handleAnimationEnd);
-    });
+    return addClassesTo(fxName, target);
 };
+function addClassesTo(fxName, target) {
+    let res;
+    const promise = new Promise(function resinate(resolve) {
+        res = resolve;
+    });
+    function handleAnimationEnd(event) {
+        // Optional: make sure the event is from the target element
+        if (event.target !== target)
+            return;
+        // Clean up
+        target.classList.remove('animate__animated', 'animate__' + fxName);
+        target.removeEventListener('animationend', handleAnimationEnd);
+        res(undefined);
+    }
+    target.classList.add('animate__animated', 'animate__' + fxName);
+    target.addEventListener('animationend', handleAnimationEnd);
+    return promise;
+}
 // absolute
 export function captureElementPosition(element) {
     element.style.zIndex = element.style.zIndex || 1;

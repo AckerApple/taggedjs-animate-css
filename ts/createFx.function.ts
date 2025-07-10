@@ -1,11 +1,11 @@
 export type ElementEvent = {
   target: HTMLElement
-  stagger: number
+  // stagger: number
 }
 
 type ElementFxEvent = ElementEvent & {
   fxName: string
-  staggerBy: number
+  // staggerBy?: number
 }
 
 type ElementFxOutEvent = ElementFxEvent & {
@@ -15,67 +15,93 @@ type ElementFxOutEvent = ElementFxEvent & {
 export function createFx({
   fxIn,
   fxOut,
-  staggerBy = 300,
+  // staggerBy = 300,
   outPositionAbsolute = true,
 }: {
   fxIn: string
   fxOut: string
-  staggerBy?: number
+  // staggerBy?: number
   outPositionAbsolute?: boolean,
 }) {
   return {
-    in: (input: ElementEvent) =>
-      animateInit({fxName: fxIn, staggerBy, ...input}),
+    in: (input: ElementEvent, stagger?: number) =>
+      animateInit({
+        fxName: fxIn,
+        ...input,
+      }, stagger),
     
     out: (
       input: ElementEvent,
+      stagger?: number
     ) =>
-      animateDestroy({fxName: fxOut, staggerBy, outPositionAbsolute, ...input}),
+      animateDestroy({
+        fxName: fxOut,
+        outPositionAbsolute,
+        ...input,
+      }, stagger),
   }
 }
 
-const animateInit = async ({
-  target, stagger, staggerBy, fxName = 'fadeInDown'
-}: ElementFxEvent) => {/* animateInit */
+const animateInit = async (
+  {
+    target,
+    fxName = 'fadeInUp'
+  }: ElementFxEvent,
+  stagger?: number
+) => {/* animateInit */
   target.style.opacity = '0'
   
   if(stagger) {
-    await wait(stagger * staggerBy)
+    await wait(stagger)
   }
 
   target.style.opacity = '1'
-  target.classList.add('animate__animated','animate__' + fxName)
+  return addClassesTo(fxName, target)
 }
 
-const animateDestroy = async ({
-  target, stagger,
-  outPositionAbsolute=true,
-  fxName = 'fadeOutUp',
-  staggerBy
-}: ElementFxOutEvent) => {/* animateDestroy */
+const animateDestroy = async (
+  {
+    target,
+    outPositionAbsolute=true,
+    fxName = 'fadeOutUp',
+  }: ElementFxOutEvent,
+  stagger?: number
+) => {/* animateDestroy */
   if(outPositionAbsolute) {
     captureElementPosition(target)
   }
 
   if(stagger) {
-    await wait(stagger * staggerBy)
+    await wait(stagger)
   }
 
+  return addClassesTo(fxName, target)
+}
 
-  return new Promise<void>(function(res) {
-    // Create a one-time event listener
-    function handleAnimationEnd(event: any) {
-        // Optional: make sure the event is from the target element
-        if (event.target !== target) return;
+function addClassesTo(
+  fxName: string,
+  target: Element,
+) {
+  let res: any
 
-        // Clean up
-        target.classList.remove('animate__animated', 'animate__' + fxName);
-        target.removeEventListener('animationend', handleAnimationEnd);
-        res(undefined)
-    }
-    target.classList.add('animate__animated', 'animate__' + fxName);
-    target.addEventListener('animationend', handleAnimationEnd);
+  const promise = new Promise<void>(function resinate(resolve) {
+    res = resolve
   })
+
+  function handleAnimationEnd(event: any) {  
+    // Optional: make sure the event is from the target element
+    if (event.target !== target) return;
+
+    // Clean up
+    target.classList.remove('animate__animated', 'animate__' + fxName);
+    target.removeEventListener('animationend', handleAnimationEnd);
+    res(undefined)
+  }
+
+  target.classList.add('animate__animated', 'animate__' + fxName)
+  target.addEventListener('animationend', handleAnimationEnd)
+
+  return promise
 }
 
 // absolute

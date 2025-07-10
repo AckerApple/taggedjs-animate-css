@@ -1,24 +1,131 @@
+import { AnimateWrapOptions, fxCallback } from "./AnimateWrapOptions.type.js"
 import { createFx, ElementEvent } from "./createFx.function.js"
-import { getInnerHTML, html } from "taggedjs"
+import { addPaintRemoveAwait, getInnerHTML, host, html, HostCallback, HostValue } from "taggedjs"
 
-export const { in: fadeInDown, out: fadeOutUp } = createFx({fxIn:'fadeInDown', fxOut:'fadeOutUp'})
-export const { in: fadeIn, out: fadeOut } = createFx({fxIn:'fadeIn', fxOut:'fadeOut'})
+export { fxNames } from './AnimateWrapOptions.type.js'
 
-export type AnimateWrapOptions = {
-  /** fadeInDown or fadeIn */
-  fxIn?: (input: ElementEvent) => Promise<void>
-  
-  /** fadeOutUp or fadeOut */
-  fxOut?: (input: ElementEvent) => Promise<void>
-  
-  /** Ex: .1s */
-  duration: string
+/** preferred */
+export const { in: fadeInUp, out: fadeOutDown } = createFx({
+  fxIn:'fadeInUp',
+  fxOut:'fadeOutDown'
+})
 
-  /** only used when fxIn or fxOut is not provided */
-  outPositionAbsolute?: boolean
+export const { in: fadeInDown, out: fadeOutUp } = createFx({
+  fxIn:'fadeInDown',
+  fxOut:'fadeOutUp'
+})
+
+export const { in: fadeIn, out: fadeOut } = createFx({
+  fxIn:'fadeIn',
+  fxOut:'fadeOut',
+})
+
+/** Group created animations together with staggering */
+export const fxGroup = ({
+  stagger = 100,
+  fxIn, fxOut,
+  duration = '2s',
+  inName = 'fadeInUp',
+  outName = 'fadeOutDown',
+  outPositionAbsolute = false,
+}: AnimateWrapOptions = {}
+): HostValue => {
+  let staggerTime = 0
+
+  const setup = setupFx(
+    function onInit(element) {
+      element.style.setProperty('--animate-duration', duration)
+      const totalStagger = stagger * (staggerTime++)
+      return setup.fxIn({ target: element } as any as ElementEvent, totalStagger).then(() => {
+        --staggerTime
+      })
+    },
+    function onDestroy(element) {
+      element.style.setProperty('--animate-duration', duration)
+      const totalStagger = stagger * (staggerTime++)
+      const destroyPromise = setup.fxOut({ target: element } as any as ElementEvent, totalStagger).then(() => {
+        --staggerTime
+      })
+      addPaintRemoveAwait(destroyPromise)
+      return destroyPromise
+    },
+    fxIn,
+    fxOut,
+    inName, outName,
+    // stagger,
+    outPositionAbsolute
+  )
+
+  return setup.host
 }
 
-/** Use on html elements to have them animated in and out */
+/** Used as a host on element. <div ${fx()}> */
+export const fx = ({
+  fxIn, fxOut, stagger,
+  inName = 'fadeInUp',
+  outName = 'fadeOutDown',
+  duration = '.2s',
+  outPositionAbsolute = false,
+}: AnimateWrapOptions = {}
+): HostValue => {
+  const setup = setupFx(
+    (element) => {
+      element.style.setProperty('--animate-duration', duration)
+      return setup.fxIn({ target: element } as any as ElementEvent, stagger)
+    },
+    (element) => {
+      element.style.setProperty('--animate-duration', duration)
+      const destroyPromise = setup.fxOut({ target: element } as any as ElementEvent, stagger)
+      addPaintRemoveAwait(destroyPromise)
+      return destroyPromise
+    },
+    fxIn,
+    fxOut,
+    inName, outName,
+    // stagger,
+    outPositionAbsolute
+  )
+
+  return setup.host
+}
+
+function setupFx(
+  onInit: HostCallback,
+  onDestroy: HostCallback,
+  fxIn: fxCallback | undefined,
+  fxOut: fxCallback | undefined,
+  inName: string,
+  outName: string,
+  // stagger: number | undefined,
+  outPositionAbsolute: boolean | undefined,
+) {
+  if (!fxIn || !fxOut) {
+    const created = createFx({
+      fxIn: inName,
+      fxOut: outName,
+      // staggerBy: stagger,
+      outPositionAbsolute,
+    })
+
+    if (!fxIn) {
+      fxIn = created.in
+    }
+
+    if (!fxOut) {
+      fxOut = created.out
+    }
+  }
+
+  return {
+    fxIn, fxOut,
+    host : host(() => undefined, {
+      onInit,
+      onDestroy,
+    })
+  }
+}
+
+/** @deprecated - Instead use <div ${fx()}> ... Use on html elements to have them animated in and out */
 export function animateWrap({
   fxIn,
   fxOut,
@@ -29,7 +136,11 @@ export function animateWrap({
   outPositionAbsolute: false,
 }) {
   if(!fxIn || !fxOut) {
-    const created = createFx({fxIn:'fadeInDown', fxOut:'fadeOutUp', outPositionAbsolute})
+    const created = createFx({
+      fxIn:'fadeInUp',
+      fxOut:'fadeOutDown',
+      outPositionAbsolute,
+    })
 
     if(!fxIn) {
       fxIn = created.in
@@ -57,7 +168,11 @@ export function animateLoop({
   outPositionAbsolute: true,
 }) {
   if(!fxIn || !fxOut) {
-    const created = createFx({fxIn:'fadeInDown', fxOut:'fadeOutUp', outPositionAbsolute})
+    const created = createFx({
+      fxIn:'fadeInUp',
+      fxOut:'fadeOutDown',
+      outPositionAbsolute
+    })
 
     if(!fxIn) {
       fxIn = created.in
