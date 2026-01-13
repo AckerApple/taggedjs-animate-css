@@ -2,7 +2,7 @@
   "name": "taggedjs-animate-css",
   "type": "module",
   "private": true,
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "HTML and CSS animations for TaggedJs brought to us by animate-css",
   "main": "js/index.js",
   "scripts": {
