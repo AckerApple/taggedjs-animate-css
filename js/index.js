@@ -1,5 +1,5 @@
 import { createFx } from "./createFx.function.js";
-import { addPaintRemoveAwait, getInnerHTML, host, html } from "taggedjs";
+import { host } from "taggedjs";
 /** preferred */
 export const { in: fadeInUp, out: fadeOutDown } = createFx({
     fxIn: 'fadeInUp',
@@ -28,7 +28,7 @@ export const fxGroup = ({ stagger = 100, fxIn, fxOut, duration = '2s', inName = 
         const destroyPromise = setup.fxOut({ target: element }, totalStagger).then(() => {
             --staggerTime;
         });
-        addPaintRemoveAwait(destroyPromise);
+        // addPaintRemoveAwait(destroyPromise)
         return destroyPromise;
     }, fxIn, fxOut, inName, outName, 
     // stagger,
@@ -43,7 +43,7 @@ export const fx = ({ fxIn, fxOut, stagger, inName = 'fadeInUp', outName = 'fadeO
     }, (element) => {
         element.style.setProperty('--animate-duration', duration);
         const destroyPromise = setup.fxOut({ target: element }, stagger);
-        addPaintRemoveAwait(destroyPromise);
+        // addPaintRemoveAwait(destroyPromise)
         return destroyPromise;
     }, fxIn, fxOut, inName, outName, 
     // stagger,
@@ -74,51 +74,5 @@ outPositionAbsolute) {
             onDestroy,
         })
     };
-}
-/** @deprecated - Instead use <div ${fx()}> ... Use on html elements to have them animated in and out */
-export function animateWrap({ fxIn, fxOut, duration = '.2s', outPositionAbsolute = false, } = {
-    duration: '.2s',
-    outPositionAbsolute: false,
-}) {
-    if (!fxIn || !fxOut) {
-        const created = createFx({
-            fxIn: 'fadeInUp',
-            fxOut: 'fadeOutDown',
-            outPositionAbsolute,
-        });
-        if (!fxIn) {
-            fxIn = created.in;
-        }
-        if (!fxOut) {
-            fxOut = created.out;
-        }
-    }
-    const innerHTML = getInnerHTML();
-    return html `
-    <div oninit=${fxIn} ondestroy=${fxOut} style.--animate-duration=${duration}>${innerHTML}</div>
-  `.acceptInnerHTML(innerHTML);
-}
-/** Use on html elements, within a loop, to have them animated in and out */
-export function animateLoop({ fxIn, fxOut, duration = '.2s', outPositionAbsolute = true, } = {
-    duration: '.2s',
-    outPositionAbsolute: true,
-}) {
-    if (!fxIn || !fxOut) {
-        const created = createFx({
-            fxIn: 'fadeInUp',
-            fxOut: 'fadeOutDown',
-            outPositionAbsolute
-        });
-        if (!fxIn) {
-            fxIn = created.in;
-        }
-        if (!fxOut) {
-            fxOut = created.out;
-        }
-    }
-    const innerHTML = getInnerHTML();
-    return html `
-    <div oninit=${fxIn} ondestroy=${fxOut} style.--animate-duration=${duration}>${innerHTML}</div>
-  `.acceptInnerHTML(innerHTML);
 }
 //# sourceMappingURL=index.js.map

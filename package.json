@@ -1,7 +1,7 @@
 {
   "name": "taggedjs-animate-css",
   "type": "module",
-  "version": "0.0.16",
+  "version": "0.0.18",
   "description": "HTML and CSS animations for TaggedJs brought to us by animate-css",
   "main": "js/index.js",
   "keywords": [
@@ -19,6 +19,6 @@
   "author": "Acker Dawn Apple",
   "license": "MIT",
   "peerDependencies": {
-    "taggedjs": "^2.8.38"
+    "taggedjs": "file:../../taggedjs/main/dist"
   }
 }
