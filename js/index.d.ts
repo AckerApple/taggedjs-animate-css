@@ -10,7 +10,3 @@ export declare const fadeIn: (input: ElementEvent, stagger?: number | undefined)
 export declare const fxGroup: ({ stagger, fxIn, fxOut, duration, inName, outName, outPositionAbsolute, }?: AnimateWrapOptions) => HostValue;
 /** Used as a host on element. <div ${fx()}> */
 export declare const fx: ({ fxIn, fxOut, stagger, inName, outName, duration, outPositionAbsolute, }?: AnimateWrapOptions) => HostValue;
-/** @deprecated - Instead use <div ${fx()}> ... Use on html elements to have them animated in and out */
-export declare function animateWrap({ fxIn, fxOut, duration, outPositionAbsolute, }?: AnimateWrapOptions): import("taggedjs").Tag;
-/** Use on html elements, within a loop, to have them animated in and out */
-export declare function animateLoop({ fxIn, fxOut, duration, outPositionAbsolute, }?: AnimateWrapOptions): import("taggedjs").Tag;
